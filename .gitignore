@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+
+# Electron build outputs
+out/
+*.asar
+
+# Local data files
+bills.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code workspace settings
+.vscode/
+
+# Environment files
+.env

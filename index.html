@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grind2Whale🐋 - Financial Management</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>Grind2Whale🐋</h1>
+            <p class="app-subtitle">Your complete financial management solution</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="bills">Bills</button>
+            <button class="tab-btn" data-tab="investments">Investments</button>
+            <button class="tab-btn" data-tab="charts">Analytics</button>
+			<button class="tab-btn" data-tab="settings">Settings</button>
+        </nav>
+
+        <!-- Bills Tab -->
+        <div id="bills-tab" class="tab-content active">
+            <!-- Year/Month Selection -->
+            <section class="controls-section">
+                <div class="date-controls">
+                    <div class="form-group">
+                        <label class="form-label" for="yearSelect">Year:</label>
+                        <select id="yearSelect" class="form-control">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="monthSelect">Month:</label>
+                        <select id="monthSelect" class="form-control">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="addYearBtn" class="btn btn--primary">Add New Year</button>
+                    <button id="deleteYearBtn" class="btn btn--outline">Delete Current Year</button>
+                </div>
+            </section>
+
+            <!-- Summary Cards -->
+            <section class="summary-section">
+                <div class="summary-grid">
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>Monthly Summary</h3>
+                            <div class="summary-stats">
+                                <div class="stat">
+                                    <span class="stat-value" id="monthlyTotal">0</span>
+                                    <span class="stat-label">Total Expenses</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="monthlyPaid">0</span>
+                                    <span class="stat-label">Total Paid</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="monthlyUnpaid">0</span>
+                                    <span class="stat-label">Total Unpaid</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="monthlyPercentage">0%</span>
+                                    <span class="stat-label">Paid Percentage</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card summary-card">
+                        <div class="card__body">
+                            <h3>Overall Overview</h3>
+                            <div class="summary-stats">
+                                <div class="stat">
+                                    <span class="stat-value" id="overallPaid">0</span>
+                                    <span class="stat-label">Total Paid (All Time)</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="overallBills">0/0</span>
+                                    <span class="stat-label">Bills Paid/Total</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Bill Form -->
+            <section class="add-bill-section">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Add New Bill</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="addBillForm" class="add-bill-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="billName">Bill Name:</label>
+                                    <input type="text" id="billName" class="form-control" placeholder="Enter bill name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="billAmount">Amount:</label>
+                                    <input type="number" id="billAmount" class="form-control" step="0.01" placeholder="0.00" required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn--primary">Add Bill</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bills Table -->
+            <section class="bills-section">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Bills for <span id="currentMonthYear">Current Month</span></h3>
+                        <div class="table-controls">
+                            <input type="text" id="searchBills" class="form-control search-input" placeholder="Search bills...">
+                            <button id="exportBtn" class="btn btn--secondary btn--sm">Export Summary</button>
+                        </div>
+                    </div>
+                    <div class="card__body">
+                        <div class="table-container">
+                            <table id="billsTable" class="bills-table">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable" data-sort="name">
+                                            Name
+                                            <span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="sortable" data-sort="amount">
+                                            Amount
+                                            <span class="sort-indicator"></span>
+                                        </th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billsTableBody">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                            <div id="noBillsMessage" class="no-bills-message hidden">
+                                No bills found for this month.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+                <!-- Investments Tab -->
+        <div id="investments-tab" class="tab-content">
+            <!-- Subtab navigation -->
+            <div class="subtab-navigation">
+                <button class="subtab-btn active" data-subtab="active-investments">Active Investments</button>
+                <button class="subtab-btn" data-subtab="platforms">Platforms</button>
+                <button class="subtab-btn" data-subtab="sold-investments">Sold Investments</button>
+            </div>
+
+            <!-- Active Investments subtab -->
+            <div id="active-investments" class="subtab-content" style="display: block;">
+                <!-- Investment Summary -->
+                <section class="investment-summary">
+                    <div class="summary-grid">
+                        <div class="card summary-card">
+                            <div class="card__body">
+                                <h3>Investment Overview</h3>
+                                <div class="summary-stats">
+                                    <div class="stat">
+                                        <span class="stat-value" id="totalInvestments">0</span>
+                                        <span class="stat-label">Total Investments</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="monthlyContributions">0</span>
+                                        <span class="stat-label">Monthly Contributions</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="platformCount">0</span>
+                                        <span class="stat-label">Platforms</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Add Investment Form -->
+                <section class="add-investment-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Add New Investment</h3>
+                        </div>
+                        <div class="card__body">
+                            <form id="addInvestmentForm" class="investment-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="investmentName">Investment Name:</label>
+                                        <input type="text" id="investmentName" class="form-control" placeholder="e.g., Apple Stock" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="investmentAmount">Amount:</label>
+                                        <input type="number" id="investmentAmount" class="form-control" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="investmentCurrency">Currency:</label>
+                                        <select id="investmentCurrency" class="form-control" required>
+                                            <option value="CHF">CHF</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="investmentPlatform">Platform:</label>
+                                        <select id="investmentPlatform" class="form-control" required>
+                                            <!-- Populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="monthlyContribution">Monthly Contribution:</label>
+                                        <input type="number" id="monthlyContribution" class="form-control" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="pricePerUnit">Price per Unit:</label>
+                                        <input type="number" id="pricePerUnit" class="form-control" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="quantity">Quantity:</label>
+                                        <input type="number" id="quantity" class="form-control" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn--primary">Add Investment</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Active Investments Table -->
+                <section class="investments-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Active Investments</h3>
+                            <div class="table-controls">
+                                <input type="text" id="searchInvestments" class="form-control search-input" placeholder="Search investments...">
+                            </div>
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="investmentsTable" class="investments-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                            <th>Currency</th>
+                                            <th>Platform</th>
+                                            <th>Monthly</th>
+                                            <th>Price/Unit</th>
+                                            <th>Quantity</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="investmentsTableBody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Platforms subtab -->
+            <div id="platforms" class="subtab-content" style="display: none;">
+                <section class="platforms-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Investment Platforms</h3>
+                        </div>
+                        <div class="card__body">
+                            <div id="platformsList" class="platforms-list">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                            <div class="add-platform-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" id="newPlatform" class="form-control" placeholder="Enter platform name">
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="addPlatformBtn" class="btn btn--primary">Add Platform</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sold Investments subtab -->
+            <div id="sold-investments" class="subtab-content" style="display: none;">
+                <!-- Sold Investments Summary -->
+                <section class="sold-summary">
+                    <div class="summary-grid">
+                        <div class="card summary-card profit-loss-card">
+                            <div class="card__body">
+                                <h3>Profit/Loss Summary</h3>
+                                <div class="summary-stats">
+                                    <div class="stat">
+                                        <span class="stat-value" id="totalProfit">0</span>
+                                        <span class="stat-label">Total P/L</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="soldCount">0</span>
+                                        <span class="stat-label">Sold Investments</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value" id="avgReturn">0%</span>
+                                        <span class="stat-label">Avg Return</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sold Investments Filter -->
+                <section class="sold-filters">
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="filter-controls">
+                                <div class="form-group">
+                                    <label class="form-label" for="filterSoldPlatform">Filter by Platform:</label>
+                                    <select id="filterSoldPlatform" class="form-control">
+                                        <option value="">All Platforms</option>
+                                        <!-- Populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="searchSold" class="form-control search-input" placeholder="Search sold investments...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sold Investments Table -->
+                <section class="sold-section">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Sold Investments History</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="soldTable" class="sold-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Platform</th>
+                                            <th>Purchase</th>
+                                            <th>Sale</th>
+                                            <th>P/L (Original)</th>
+                                            <th>P/L (CHF)</th>
+                                            <th>Date Sold</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="soldTableBody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Charts Tab -->
+        <div id="charts-tab" class="tab-content">
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Profit/Loss Chart -->
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Profit/Loss Over Time</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas id="plChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bills Current Month Chart -->
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Bills Current Month</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="billsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bills Overall Chart -->
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Bills Overall Status</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="overallChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investments by Platform Chart -->
+                    <div class="card chart-card">
+                        <div class="card__header">
+                            <h3>Investments by Platform</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="platformChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+<!-- Settings Tab -->
+<div id="settings-tab" class="tab-content">
+    <section class="settings-section">
+        <div class="card">
+            <div class="card__header">
+                <h3>Settings</h3>
+            </div>
+			<!-- Global currency choice -->
+            <div class="card__body">
+                <div class="global-currency">
+                <label class="form-label" for="globalCurrency">Display Currency:</label>
+                <select id="globalCurrency" class="form-control currency-selector">
+                    <option value="CHF">CHF (Swiss Franc)</option>
+                    <option value="USD">USD (US Dollar)</option>
+                    <option value="EUR">EUR (Euro)</option>
+                </select>
+            </div>
+            </div>
+        </div>
+    </section>
+	
+	<!-- Base Bills Management -->
+    <section class="base-bills-section">
+		<div class="card">
+			<div class="card__header">
+                <h3>Base Bills Template</h3>
+					<p class="card-subtitle">These bills will be automatically added to new months</p>
+            </div>
+            <div class="card__body">
+				<div id="baseBillsList" class="base-bills-list">
+					<!-- Populated by JavaScript -->
+				</div>
+					<button id="addBaseBillBtn" class="btn btn--secondary btn--sm">Add Base Bill</button>
+            </div>
+		</div>
+	</section>
+
+    <!-- Delete Data Section (moved inside Settings tab at bottom) -->
+    <section class="delete-section">
+        <div class="card danger-card">
+            <div class="card__header">
+                <h3>Danger Zone</h3>
+            </div>
+            <div class="card__body">
+                <p>Permanently delete all data including bills, investments, and sold investments. This action cannot be undone.</p>
+                <div class="delete-controls">
+                    <input type="text" id="deleteConfirmation" class="form-control" placeholder="Type DELETE to confirm">
+                    <button id="deleteAllDataBtn" class="btn btn--outline danger-btn">Delete All Data</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+    <!-- Modals -->
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCancel" class="btn btn--secondary">Cancel</button>
+                <button id="modalConfirm" class="btn btn--primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Bill Modal -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Bill</h3>
+            </div>
+            <div class="modal-body">
+                <form id="editBillForm">
+                    <div class="form-group">
+                        <label class="form-label" for="editBillName">Bill Name:</label>
+                        <input type="text" id="editBillName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editBillAmount">Amount:</label>
+                        <input type="number" id="editBillAmount" class="form-control" step="0.01" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="editCancel" class="btn btn--secondary">Cancel</button>
+                <button id="editSave" class="btn btn--primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Investment Modal -->
+    <div id="editInvestmentModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Investment</h3>
+            </div>
+            <div class="modal-body">
+                <form id="editInvestmentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="editInvestmentName">Investment Name:</label>
+                            <input type="text" id="editInvestmentName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editInvestmentAmount">Amount:</label>
+                            <input type="number" id="editInvestmentAmount" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="editInvestmentCurrency">Currency:</label>
+                            <select id="editInvestmentCurrency" class="form-control" required>
+                                <option value="CHF">CHF</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editInvestmentPlatform">Platform:</label>
+                            <select id="editInvestmentPlatform" class="form-control" required>
+                                <!-- Populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="editMonthlyContribution">Monthly Contribution:</label>
+                            <input type="number" id="editMonthlyContribution" class="form-control" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editPricePerUnit">Price per Unit:</label>
+                            <input type="number" id="editPricePerUnit" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editQuantity">Quantity:</label>
+                        <input type="number" id="editQuantity" class="form-control" step="0.01" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="editInvestmentCancel" class="btn btn--secondary">Cancel</button>
+                <button id="editInvestmentSave" class="btn btn--primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sell Investment Modal -->
+    <div id="sellModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sell Investment</h3>
+            </div>
+            <div class="modal-body">
+                <div class="investment-info">
+                    <p><strong>Investment:</strong> <span id="sellInvestmentName"></span></p>
+                    <p><strong>Current Holdings:</strong> <span id="sellInvestmentQuantity"></span> units</p>
+                    <p><strong>Purchase Price:</strong> <span id="sellInvestmentPurchasePrice"></span></p>
+                </div>
+                <form id="sellInvestmentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="sellPrice">Selling Price per Unit:</label>
+                            <input type="number" id="sellPrice" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="sellCurrency">Selling Currency:</label>
+                            <select id="sellCurrency" class="form-control" required>
+                                <option value="CHF">CHF</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="profit-preview">
+                        <div class="card">
+                            <div class="card__body">
+                                <h4>Sale Preview</h4>
+                                <div class="preview-stats">
+                                    <div class="stat">
+                                        <span class="stat-label">Sale Amount:</span>
+                                        <span class="stat-value" id="previewSaleAmount">0</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Profit/Loss:</span>
+                                        <span class="stat-value" id="previewProfitLoss">0</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">CHF Equivalent:</span>
+                                        <span class="stat-value" id="previewCHF">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="sellCancel" class="btn btn--secondary">Cancel</button>
+                <button id="sellConfirm" class="btn btn--primary">Confirm Sale</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Toast -->
+    <div id="messageToast" class="toast hidden">
+        <span id="toastMessage"></span>
+    </div>
+	
+    <div id="addYearModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addYearTitle" aria-describedby="addYearDesc">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="addYearTitle">Add New Year</h3>
+            </header>
+            <section class="modal-body">
+                <p id="addYearDesc">Enter the year you want to add:</p>
+                <input type="text" id="addYearField" placeholder="YYYY" />
+            </section>
+            <footer class="modal-footer">
+                <button id="addYearCancel" class="btn btn--outline">Cancel</button>
+                <button id="addYearConfirm" class="btn btn--primary">Add</button>
+            </footer>
+         </div>
+    </div>
+    
+    <!-- Leave this at the end -->
+    <script src="app.js"></script>
+    
+</body>
+</html>
