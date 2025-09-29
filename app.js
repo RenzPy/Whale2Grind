@@ -1,29 +1,22 @@
 // Grind2Whale🐋 Financial Management Application
 
-function saveBillsToFile() {
-    if (window.electron && window.electron.saveData) {
-        window.electron.saveData('bills.json', JSON.stringify(this.data)).then(result => {
-            if (!result.success) {
-                console.error('Failed to save data:', result.error);
-            }
-        });
+async function saveBillsToFile() {
+    try {
+        await this.api.saveData(this.data);
+        console.log('Data saved successfully');
+    } catch (error) {
+        console.error('Failed to save data:', error);
     }
 }
 
-function loadBillsFromFile() {
-    if (window.electron && window.electron.loadData) {
-        return window.electron.loadData('bills.json').then(result => {
-            if (result.success && result.data) {
-                const loadedData = JSON.parse(result.data);
-                this.data = { ...this.data, ...loadedData };
-                this.updateAllDisplays();
-                return true;
-            } else {
-                this.loadSampleData();
-                return false;
-            }
-        });
-    } else {
+async function loadBillsFromFile() {
+    try {
+        // For now, we'll skip loading and just use sample data
+        // Once you set up authentication, this will load real data
+        this.loadSampleData();
+        return Promise.resolve(true);
+    } catch (error) {
+        console.error('Failed to load data:', error);
         this.loadSampleData();
         return Promise.resolve(false);
     }
@@ -55,6 +48,7 @@ class FinancialManager {
         this.currentSellIndex = -1;
         this.pendingAction = null;
         this.charts = {};
+        this.api = new FinancialAPI();
         
         this.init();
     }
