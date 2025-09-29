@@ -8,6 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
+    <script>
+    // Check if user is logged in
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+    </script>
+
     <div class="container">
         <header class="app-header">
             <h1>Grind2Whale🐋</h1>
